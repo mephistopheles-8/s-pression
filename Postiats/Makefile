@@ -11,7 +11,7 @@ CFLAGS=-O2
 LFLAGS=
 
 all:: example
-example: example.dats ; $(PATSCC) $(PATSFLAGS) $(CFLAGS) $(C11FLAGS) -o $@ $< $(LFLAGS) 
+example: example.dats ; $(PATSCC) $(PATSFLAGS) $(CFLAGS) -o $@ $< $(LFLAGS) 
 cleanall:: ; $(RMF) example
 
 cleanall:: ; $(RMF) *_*ats.c

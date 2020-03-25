@@ -5,7 +5,9 @@ staload "./proc.sats"
 
 (** IMPL **)
 
-(** The first 6 arguments of a proc are expanded and represented as unboxed tuples **)
+(** 
+  The first 6 arguments of a proc are expanded and represented as unboxed tuples 
+**)
 
 stadef proc_list1(id1,t1,pl1) 
   = p(id1,t1,pl1) ::: pnil()
@@ -142,6 +144,14 @@ proc_res_foreach<p(id,t0,pl0) ::: pl1><env>( pr, env )
     | proc_res_cons( x, xs ) => {
         val () = proc_res_foreach$fwork<t0><env>( x, env )
         val () = proc_res_foreach<pl1><env>( xs, env )
+        (**
+           The biggest caveat of this style of programming
+           is that you must be careful to avoid TCO 
+           when calling a template with the same name, but
+           different arguments.  Failure to do so
+           may result in chaos.
+        **)
+        (** Avoid TCO **)
         val () = ignoret(0) 
       }
 
@@ -156,44 +166,7 @@ proc_res_process<p(id,t0,pl0) ::: pl1><env>( pr, env )
     | ~proc_res_cons( x, xs ) => {
         val () = proc_res_process$fwork<t0><env>( x, env )
         val () = proc_res_process<pl1><env>( xs, env )
+        (** Avoid TCO **)
         val () = ignoret(0) 
       }
-
-(** TEST **)
-
-stacst sub : int
-stacst add : int
-stacst i0 : int
-stacst i1 : int
-stacst i2 : int
-
-implement
-proc$intr<i0><int>() = 22
-implement
-proc$intr<i1><int>() = 2
-implement
-proc$intr<i2><int>() = 3
-
-implement
-proc$eval<add><(@(int,int)),int>( arg ) = arg.0 + arg.1
-
-implement (id0,id1,pl0,pl1)
-proc$eval<sub><(@(int,int)),int>( arg ) = arg.0 - arg.1
-
-stadef $+.( p1, p2 ) = p(add, int, p1 ::: p2 ::: pnil)
-stadef $-.( p1, p2 ) = p(sub, int, p1 ::: p2 ::: pnil)
-
-// (- (+ i0 i1) i2)
-stadef test = $-.( $+.( i(i0,int), i(i1,int) ), i(i2,int)  )
-
-implement main0 () = {
-      val () = println!( proc_exec<test><int>() )
-  }
-
-
-
-
-
-
-
 

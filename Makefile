@@ -10,9 +10,9 @@ PATSFLAGS=-DATS_MEMALLOC_LIBC
 CFLAGS=-O2
 LFLAGS=
 
-all:: proc
-proc: proc.dats ; $(PATSCC) $(PATSFLAGS) $(CFLAGS) $(C11FLAGS) -o $@ $< $(LFLAGS) 
-cleanall:: ; $(RMF) proc
+all:: example
+example: example.dats ; $(PATSCC) $(PATSFLAGS) $(CFLAGS) $(C11FLAGS) -o $@ $< $(LFLAGS) 
+cleanall:: ; $(RMF) example
 
 cleanall:: ; $(RMF) *_*ats.c
 
